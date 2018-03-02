@@ -17,16 +17,30 @@ token = nltk.word_tokenize(trainingText)
 trainBigrams = ngrams(token,2)
 
 biTrainDict = (Counter(trainBigrams))
+uniTrainDict = (Counter(token))
 
-testText = "To accelerate the final translation speed we employ low-precision arithmetic during inference computations. To improve handling of rare words we divide words into a limited set of common sub-word units wordpieces for both input and output. This method provides a good balance between the flexibility of character-delimited models and the efficiency of word-delimited models naturally handles translation of rare words and ultimately improves the overall accuracy of the system. Our beam search technique employs a length-normalization procedure and uses a coverage penalty which encourages generation of an output sentence that is most likely to cover all the words in the source sentence. On the WMT14 English-to-French and English-to-German benchmarks GNMT achieves competitive results to state-of-the-art. Using a human side-by-side evaluation on a set of isolated simple sentences it reduces translation errors by an average of 60% compared to Googles phrase-based production system."
+testText = "To accelerate the final translation speed we employ low-precision arithmetic during inference computations. To improve handling of rare words we divide words into a limited set of common sub-word units wordpieces for both input and output. This method provides a good balance between the flexibility of character-delimited models and the efficiency of word-delimited models naturally handles translation of rare words and ultimately improves the overall accuracy of the system. Our beam search technique employs a length-normalization procedure and uses a coverage penalty which encourages generation of an output sentence that is most likely to cover all the words in the source sentence. On the WMT14 English-to-French and English-to-German benchmarks GNMT achieves competitive results to state-of-the-art. Using a human side-by-side evaluation on a set of isolated simple sentences it reduces translation errors by an average of 60% compared to Googles phrase-based production system"
 
+def sentenceProb(ngrams, trainDict):
+    sentProb = 1
+    biTestSentence = Counter(ngrams)
+    for i in biTestSentence:
+        if(i in trainDict):
+            print(i, trainDict.get(i)/uniTrainDict.get(i[0]))
+            sentProb *= trainDict.get(i)/uniTrainDict.get(i[0])
+        else:
+            return 0
+    return sentProb
 
 sentences = testText.split('.')
 testBigrams = []
 for sentence in sentences:
     sentence = sentence + "."
+    token = nltk.word_tokenize(sentence)
     testBigrams.append(ngrams(token,2))
+    prob = sentenceProb(ngrams(token,2), biTrainDict)
+    print("\n\n",sentence, prob)
 
 
-for sent in testBigrams:
-    print("\n\n\n\n",Counter(sent))
+
+
